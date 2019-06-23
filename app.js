@@ -1,26 +1,42 @@
 const Koa = require('koa');
 
-var app = new Koa();
+// koa-bodyparser
+const bodyParser = require('koa-bodyparser');
+// koa-router
+// const router = require('koa-router')();
+// 导入controller middleware:
+const controller = require('./controller');
+
+// koa
+const app = new Koa();
 
 
-// 打印url
-app.use(async (ctx,next)=>{
-    console.log(`${ctx.request.method} ${ctx.request.url}`);
+// log request url
+app.use(async (ctx, next) => {
+    console.log(`Process ${ctx.request.method} ${ctx.request.url}...`);
     await next();
 });
 
 // 计算请求时间
-app.use(async (ctx, next)=>{
+app.use(async (ctx, next) => {
     const start = new Date().getTime();
     await next();
     const ms = new Date().getTime() - start;
-    console.log(`Time: ${ms}ms`)
+    console.log(`Time: ${ms}ms`);
 });
 
-app.use(async (ctx, next) => {
-    await next();
-    ctx.response.type = 'text/html';
-    ctx.response.body = '<h1>Hello koa2</h1>';
-});
+
+
+
+
+
+
+// add bodyparser middleware
+app.use(bodyParser());
+// add router middleware
+// app.use(router.routes());
+app.use(controller());
 
 app.listen(8080);
+
+console.log('app started at port 8080...');
